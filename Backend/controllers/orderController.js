@@ -24,7 +24,7 @@ const createStripeClient = () => {
 // Placing user order for frontend
 const placeOrder = async (req, res) => {
   const frontend_url =
-    "https://12-h-food-delivery-bncr.vercel.app";
+    (import.meta.env.VITE_API_URL || "http://localhost:5173").replace(/\/$/, "");;
 
   let newOrder;
 
@@ -50,6 +50,7 @@ const placeOrder = async (req, res) => {
     });
 
     await newOrder.save();
+
 
 
     const line_items = req.body.items.map(
