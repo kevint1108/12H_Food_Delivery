@@ -1,29 +1,26 @@
 import mongoose from "mongoose";
 
-export const connectDB = async () => {
-  try {
-    // Nếu Vercel đã có kết nối thì tái sử dụng,
-    // không tạo thêm kết nối MongoDB.
-    if (mongoose.connection.readyState === 1) {
-      return mongoose.connection;
-    }
+let connectionPromise = null;
 
-    await mongoose.connect(
+export const connectDB = async () => {
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+
+  if (!connectionPromise) {
+    connectionPromise = mongoose.connect(
       "mongodb+srv://greatstack:King%4012345@cluster0.zihgufg.mongodb.net/12H_Food_Delivery"
     );
+  }
+
+  try {
+    await connectionPromise;
 
     console.log("DB Connected");
 
     return mongoose.connection;
   } catch (error) {
-    console.error(
-      "DB Connection Error:",
-      error.message
-    );
-
-    // Không throw ra ngoài vì connectDB()
-    // đang được gọi khi server khởi động.
-    return null;
+    connectionPromise = null;
+    throw error;
   }
 };
-

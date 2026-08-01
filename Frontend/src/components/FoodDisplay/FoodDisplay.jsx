@@ -1,55 +1,108 @@
-import React, { useContext } from 'react'
-import './FoodDisplay.css'
-import { StoreContext } from '../../context/StoreContext'
-import FoodItem from '../FoodItem/FoodItem'
+import React, { useContext } from "react";
+import "./FoodDisplay.css";
+import { StoreContext } from "../../context/StoreContext";
+import FoodItem from "../FoodItem/FoodItem";
 
 const FoodDisplay = ({ category }) => {
+  const {
+    food_list = [],
+    foodLoading,
+    foodError,
+    fetchFoodList,
+    search = "",
+    setSearch
+  } = useContext(StoreContext);
 
-  const { food_list, search, setSearch } = useContext(StoreContext);
-
-  const normalizeText = (text = "") => {
-    return text
-      .toString()
+  const normalizeText = (text = "") =>
+    String(text)
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .toLowerCase()
       .trim();
-  };
 
   const searchText = normalizeText(search);
+  const hasSearch = searchText.length > 0;
 
-  const filteredFoodList = food_list.filter((item) => {
-    const itemName = normalizeText(item.name);
-    const itemDescription = normalizeText(item.description);
-    const itemCategory = normalizeText(item.category);
+  const safeFoodList = Array.isArray(food_list)
+    ? food_list
+    : [];
 
-    const matchesSearch =
-      searchText === "" ||
-      itemName.includes(searchText) ||
-      itemDescription.includes(searchText) ||
-      itemCategory.includes(searchText);
+  const filteredFoodList = safeFoodList.filter(
+    (item) => {
+      const matchesSearch =
+        !hasSearch ||
+        normalizeText(item.name).includes(searchText) ||
+        normalizeText(item.description).includes(
+          searchText
+        ) ||
+        normalizeText(item.category).includes(
+          searchText
+        );
 
-    /* When a search keyword is present: search across all dishes. When not searching: filter by category, following the GreatStack code. */
-    const matchesCategory =
-      searchText !== "" ||
-      category === "All" ||
-      category === item.category;
+      const matchesCategory =
+        hasSearch ||
+        category === "All" ||
+        category === item.category;
 
-    return matchesSearch && matchesCategory;
-  });
+      return matchesSearch && matchesCategory;
+    }
+  );
+
+  const clearSearch = () => {
+    setSearch("");
+  };
 
   return (
-    <div className='food-display' id='food-display'>
+    <div
+      className="food-display"
+      id="food-display"
+    >
       <div className="food-display-heading">
-          <h2>{searchText ? "Search Results":"Our Most Loved Dishes"}</h2>
-          {searchText &&(
-            <p className="food-search-text">Showing results for{""}<strong>"{search}"</strong></p>
+        <div>
+          <h2>
+            {hasSearch
+              ? "Search Results"
+              : "Our Most Loved Dishes"}
+          </h2>
+
+          {hasSearch && (
+            <p className="food-search-text">
+              Showing results for{" "}
+              <strong>"{search.trim()}"</strong>
+            </p>
           )}
-      </div>
-       {searchText && (
-          <button type="button" className="clear-food-search" onClick={() => setSearch("")}>Clear Search</button>
+        </div>
+
+        {hasSearch && (
+          <button
+            type="button"
+            className="clear-food-search"
+            onClick={clearSearch}
+          >
+            Clear Search
+          </button>
         )}
-      {filteredFoodList.length > 0 ? (
+      </div>
+
+      {foodLoading ? (
+        <div className="food-search-empty">
+          <h3>Loading food...</h3>
+          <p>Please wait while we load the menu.</p>
+        </div>
+      ) : foodError ? (
+        <div className="food-search-empty">
+          <h3>Unable to load food</h3>
+
+          <p>{foodError}</p>
+
+          <button
+            type="button"
+            onClick={fetchFoodList}
+          >
+            Try Again
+          </button>
+        </div>
+      ) : filteredFoodList.length > 0 ? (
         <div className="food-display-list">
           {filteredFoodList.map((item) => (
             <FoodItem
@@ -62,25 +115,34 @@ const FoodDisplay = ({ category }) => {
             />
           ))}
         </div>
-      ) : (
+      ) : hasSearch ? (
         <div className="food-search-empty">
           <h3>No food found</h3>
 
           <p>
             We could not find a dish matching{" "}
-            <strong>"{search}"</strong>.
+            <strong>"{search.trim()}"</strong>.
           </p>
 
           <button
             type="button"
-            onClick={() => setSearch("")}
+            onClick={clearSearch}
           >
             Show All Food
           </button>
+        </div>
+      ) : (
+        <div className="food-search-empty">
+          <h3>No food available</h3>
+
+          <p>
+            The database did not return any dishes.
+            Add food from the Admin page.
+          </p>
         </div>
       )}
     </div>
   );
 };
 
-export default FoodDisplay
+export default FoodDisplay;

@@ -5,7 +5,7 @@ import parcel_icon from "./parcel_icon.png";
 import profile_image from "./profile_image.png";
 import upload_area from "./upload_area.png"
 
-export const url = "http://12h-food-delivery.vercel.app/"
+export const url = "https://12-h-food-delivery-6zik.vercel.app"
 export const currency = "$"
 
 export const assets = {

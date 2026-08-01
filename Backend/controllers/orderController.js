@@ -23,16 +23,12 @@ const createStripeClient = () => {
 
 // Placing user order for frontend
 const placeOrder = async (req, res) => {
-  // Phải dùng HTTPS và không có dấu "/" cuối.
   const frontend_url =
     "https://12-h-food-delivery-bncr.vercel.app";
 
   let newOrder;
 
   try {
-    console.log("ORDER BODY:", req.body);
-    console.log("ORDER ITEMS:", req.body.items);
-
     if (
       !Array.isArray(req.body.items) ||
       req.body.items.length === 0
@@ -43,20 +39,7 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    if (!req.body.userId) {
-      return res.json({
-        success: false,
-        message: "User ID is missing"
-      });
-    }
-
-    /*
-      Chỉ tạo Stripe client khi route đặt hàng
-      thật sự được gọi.
-
-      Vì vậy nếu key Stripe bị thiếu, chỉ request
-      này thất bại; toàn bộ Backend không crash.
-    */
+    // Chỉ khởi tạo khi thật sự đặt hàng
     const stripe = createStripeClient();
 
     newOrder = new orderModel({
@@ -67,6 +50,7 @@ const placeOrder = async (req, res) => {
     });
 
     await newOrder.save();
+
 
     const line_items = req.body.items.map(
       (item) => {
