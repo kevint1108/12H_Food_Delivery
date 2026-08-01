@@ -1,13 +1,31 @@
 import orderModel from "../models/orderModel.js";
-import userModel from '../models/userModel.js'
-import Stripe from "stripe"
+import userModel from "../models/userModel.js";
+import Stripe from "stripe";
 
+// Không khởi tạo Stripe ở ngoài:
+// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+//
+// Vì nếu STRIPE_SECRET_KEY bị thiếu,
+// Vercel có thể crash ngay khi import file.
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+const createStripeClient = () => {
+  const stripeSecretKey =
+    process.env.STRIPE_SECRET_KEY;
 
-// placing user order for frontend
+  if (!stripeSecretKey) {
+    throw new Error(
+      "STRIPE_SECRET_KEY is missing"
+    );
+  }
+
+  return new Stripe(stripeSecretKey);
+};
+
+// Placing user order for frontend
 const placeOrder = async (req, res) => {
-  const frontend_url = process.env.FRONTEND_URL || "http://localhost:5173";
+  // Phải dùng HTTPS và không có dấu "/" cuối.
+  const frontend_url =
+    "https://12-h-food-delivery-bncr.vercel.app";
 
   let newOrder;
 
@@ -25,6 +43,22 @@ const placeOrder = async (req, res) => {
       });
     }
 
+    if (!req.body.userId) {
+      return res.json({
+        success: false,
+        message: "User ID is missing"
+      });
+    }
+
+    /*
+      Chỉ tạo Stripe client khi route đặt hàng
+      thật sự được gọi.
+
+      Vì vậy nếu key Stripe bị thiếu, chỉ request
+      này thất bại; toàn bộ Backend không crash.
+    */
+    const stripe = createStripeClient();
+
     newOrder = new orderModel({
       userId: req.body.userId,
       items: req.body.items,
@@ -34,43 +68,54 @@ const placeOrder = async (req, res) => {
 
     await newOrder.save();
 
-    const line_items = req.body.items.map((item) => {
-      const price = Number(item.price);
-      const quantity = Number(item.quantity);
-
-      if (!item.name) {
-        throw new Error("One food item is missing its name");
-      }
-
-      if (!Number.isFinite(price) || price <= 0) {
-        throw new Error(
-          `Invalid price for ${item.name}: ${item.price}`
+    const line_items = req.body.items.map(
+      (item) => {
+        const price = Number(item.price);
+        const quantity = Number(
+          item.quantity
         );
-      }
 
-      if (
-        !Number.isInteger(quantity) ||
-        quantity <= 0
-      ) {
-        throw new Error(
-          `Invalid quantity for ${item.name}: ${item.quantity}`
-        );
-      }
+        if (!item.name) {
+          throw new Error(
+            "One food item is missing its name"
+          );
+        }
 
-      return {
-        price_data: {
-          currency: "usd",
+        if (
+          !Number.isFinite(price) ||
+          price <= 0
+        ) {
+          throw new Error(
+            `Invalid price for ${item.name}: ${item.price}`
+          );
+        }
 
-          product_data: {
-            name: item.name
+        if (
+          !Number.isInteger(quantity) ||
+          quantity <= 0
+        ) {
+          throw new Error(
+            `Invalid quantity for ${item.name}: ${item.quantity}`
+          );
+        }
+
+        return {
+          price_data: {
+            currency: "usd",
+
+            product_data: {
+              name: item.name
+            },
+
+            unit_amount: Math.round(
+              price * 100
+            )
           },
 
-          unit_amount: Math.round(price * 100)
-        },
-
-        quantity
-      };
-    });
+          quantity
+        };
+      }
+    );
 
     line_items.push({
       price_data: {
@@ -103,7 +148,8 @@ const placeOrder = async (req, res) => {
           `${frontend_url}/verify?success=false&orderId=${newOrder._id}`
       });
 
-    // Only clear the cart after the Stripe Session has been successfully created.
+    // Chỉ xóa cart sau khi Stripe Session
+    // được tạo thành công.
     await userModel.findByIdAndUpdate(
       req.body.userId,
       {
@@ -115,92 +161,192 @@ const placeOrder = async (req, res) => {
       success: true,
       session_url: session.url
     });
-
   } catch (error) {
     console.error("PLACE ORDER ERROR");
     console.error("TYPE:", error.type);
     console.error("CODE:", error.code);
     console.error("PARAM:", error.param);
     console.error("MESSAGE:", error.message);
-    console.error("REQUEST ID:", error.requestId);
+    console.error(
+      "REQUEST ID:",
+      error.requestId
+    );
     console.error(
       "STRIPE LOG:",
       error.request_log_url
     );
 
-    // If Stripe fails, delete the newly created unpaid order.
+    // Nếu Stripe lỗi, xóa order chưa thanh toán.
     if (newOrder?._id) {
       try {
         await orderModel.findByIdAndDelete(
           newOrder._id
         );
       } catch (deleteError) {
-        console.log(
+        console.error(
           "CANNOT DELETE FAILED ORDER:",
           deleteError.message
         );
       }
     }
 
-    return res.json({
+    return res.status(500).json({
       success: false,
-      message: error.message || "Unable to place order"
+      message:
+        error.message ||
+        "Unable to place order"
     });
   }
 };
 
 // Verify order payment
 const verifyOrder = async (req, res) => {
-    const { orderId, success } = req.body;
+  const { orderId, success } = req.body;
 
-    try {
-        if (success === "true") {
-            await orderModel.findByIdAndUpdate(orderId, { payment: true });
-            res.json({ success: true, message: "Paid" });
-        } else {
-            await orderModel.findByIdAndDelete(orderId);
-            res.json({ success: false, message: "Not Paid" });
-        }
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: "Error" });
+  try {
+    if (!orderId) {
+      return res.json({
+        success: false,
+        message: "Order ID is missing"
+      });
     }
+
+    if (
+      success === "true" ||
+      success === true
+    ) {
+      await orderModel.findByIdAndUpdate(
+        orderId,
+        {
+          payment: true
+        }
+      );
+
+      return res.json({
+        success: true,
+        message: "Paid"
+      });
+    }
+
+    await orderModel.findByIdAndDelete(
+      orderId
+    );
+
+    return res.json({
+      success: false,
+      message: "Not Paid"
+    });
+  } catch (error) {
+    console.error(
+      "VERIFY ORDER ERROR:",
+      error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Error verifying payment"
+    });
+  }
 };
 
 // User orders for frontend
 const userOrders = async (req, res) => {
-    try {
-        const orders = await orderModel.find({ userId: req.body.userId });
-        res.json({ success: true, data: orders });
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: "Error" });
-    }
+  try {
+    const orders = await orderModel
+      .find({
+        userId: req.body.userId
+      })
+      .sort({
+        createdAt: -1
+      });
+
+    return res.json({
+      success: true,
+      data: orders
+    });
+  } catch (error) {
+    console.error(
+      "USER ORDERS ERROR:",
+      error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Error loading orders"
+    });
+  }
 };
 
 // Listing orders for admin panel
 const listOrders = async (req, res) => {
-    try {
-        const orders = await orderModel.find({});
-        res.json({ success: true, data: orders });
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: "Error" });
-    }
+  try {
+    const orders = await orderModel
+      .find({})
+      .sort({
+        createdAt: -1
+      });
+
+    return res.json({
+      success: true,
+      data: orders
+    });
+  } catch (error) {
+    console.error(
+      "LIST ORDERS ERROR:",
+      error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Error loading orders"
+    });
+  }
 };
 
 // API for updating order status
 const updateStatus = async (req, res) => {
-    try {
-        await orderModel.findByIdAndUpdate(req.body.orderId, {
-            status: req.body.status
-        });
+  try {
+    const {
+      orderId,
+      status
+    } = req.body;
 
-        res.json({ success: true, message: "Status Updated" });
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: "Error" });
+    if (!orderId || !status) {
+      return res.json({
+        success: false,
+        message:
+          "Order ID and status are required"
+      });
     }
+
+    await orderModel.findByIdAndUpdate(
+      orderId,
+      {
+        status
+      }
+    );
+
+    return res.json({
+      success: true,
+      message: "Status Updated"
+    });
+  } catch (error) {
+    console.error(
+      "UPDATE STATUS ERROR:",
+      error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Error updating status"
+    });
+  }
 };
 
-export { placeOrder, verifyOrder, userOrders, listOrders, updateStatus }
+export {
+  placeOrder,
+  verifyOrder,
+  userOrders,
+  listOrders,
+  updateStatus
+};
