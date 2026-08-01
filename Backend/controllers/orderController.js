@@ -2,8 +2,8 @@ import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import Stripe from "stripe";
 
-// Không tạo Stripe ở ngoài cùng.
-// Chỉ tạo khi khách hàng thực sự đặt hàng.
+// Do not initialize Stripe at the top level.
+// Initialize it only when the customer actually places an order.
 const createStripeClient = () => {
   const stripeSecretKey =
     process.env.STRIPE_SECRET_KEY;
@@ -20,15 +20,15 @@ const createStripeClient = () => {
 // Placing user order for frontend
 const placeOrder = async (req, res) => {
   /*
-    Đây phải là URL FRONTEND để Stripe
-    chuyển người dùng trở lại sau thanh toán.
+  This must be the FRONTEND URL for Stripe
+  to redirect the user back to after payment. 
 
-    Local:
-    http://localhost:5173
+  Local:
+  http://localhost:5173
 
-    Vercel:
-    https://12-h-food-delivery-bncr.vercel.app
-  */
+  Vercel:
+  https://12-h-food-delivery-bncr.vercel.app
+*/
   const frontend_url = (
     process.env.FRONTEND_URL ||
     "http://localhost:5173"
@@ -81,7 +81,7 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    // Chỉ khởi tạo Stripe khi đặt hàng.
+    // Only initialize Stripe when placing an order.
     const stripe = createStripeClient();
 
     newOrder = new orderModel({
@@ -172,8 +172,8 @@ const placeOrder = async (req, res) => {
           `${frontend_url}/verify?success=false&orderId=${newOrder._id}`
       });
 
-    // Chỉ xóa cart sau khi Stripe Session
-    // được tạo thành công.
+    // Only clear the cart after the Stripe Session
+    // has been successfully created.
     await userModel.findByIdAndUpdate(
       req.body.userId,
       {
@@ -212,7 +212,7 @@ const placeOrder = async (req, res) => {
       error.request_log_url
     );
 
-    // Nếu Stripe lỗi, xóa order chưa thanh toán.
+    // If Stripe fails, delete the unpaid order.
     if (newOrder?._id) {
       try {
         await orderModel.findByIdAndDelete(
