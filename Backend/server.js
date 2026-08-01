@@ -11,33 +11,12 @@ import orderRouter from "./routes/orderRoute.js";
 const app = express();
 const port = process.env.PORT || 4000;
 
+
+app.use(cors());
 app.use(express.json());
-
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  process.env.ADMIN_URL,
-  "http://localhost:5173",
-  "http://localhost:5174"
-].filter(Boolean);
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    }
-  })
-);
+app.use(express.urlencoded({ extended: true }));
 
 connectDB();
-
-app.use("/api/food", foodRouter);
-app.use("/api/user", userRouter);
-app.use("/api/cart", cartRouter);
-app.use("/api/order", orderRouter);
 
 app.get("/", (req, res) => {
   res.json({
@@ -46,14 +25,11 @@ app.get("/", (req, res) => {
   });
 });
 
-// Chạy bằng npm run server trên máy
-if (process.env.NODE_ENV !== "production") {
-  app.listen(port, () => {
-    console.log(
-      `Server started on http://localhost:${port}`
-    );
-  });
-}
+app.use("/api/food", foodRouter);
+app.use("/api/user", userRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/order", orderRouter);
 
-// Vercel sử dụng default export
-export default app;
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server started on port ${port}`);
+});
