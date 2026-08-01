@@ -5,7 +5,7 @@ export const StoreContext = createContext(null)
 const StoreContextProvider = (props) => {
 
     const [cartItems, setCartItems] = useState({});
-    const url = (import.meta.env.VITE_API_URL || "http://localhost:4000").replace(/\/$/, "");
+    const url = "https://12-h-food-delivery-6zik.vercel.app"
     const [token,setToken] = useState("");
     const [food_list,setFoodList] = useState([]);
     const [search, setSearch] = useState("");
