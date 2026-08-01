@@ -1,0 +1,210 @@
+.header {
+    position: relative;
+
+    width: 100%;
+    height: clamp(460px, 38vw, 620px);
+    margin: 30px auto;
+
+    background:
+        url("/header_img.png")
+        no-repeat
+        center center;
+
+    background-size: cover;
+
+    border-radius: 22px;
+    overflow: hidden;
+
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.16);
+}
+
+/* Lớp nền sáng nhẹ bên trái để chữ dễ đọc */
+.header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.82) 0%,
+        rgba(255, 255, 255, 0.62) 36%,
+        rgba(255, 255, 255, 0.18) 65%,
+        rgba(255, 255, 255, 0) 100%
+    );
+
+    pointer-events: none;
+}
+
+.header-contents {
+    position: absolute;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    left: clamp(28px, 5vw, 80px);
+    bottom: clamp(35px, 7%, 65px);
+
+    width: min(650px, 48%);
+    gap: clamp(14px, 1.4vw, 22px);
+
+    animation: fadeIn 2s;
+}
+
+/* Tiêu đề */
+.header-contents h2 {
+    max-width: 650px;
+    margin: 0;
+
+    color: yellow;
+
+    font-size: clamp(44px, 4.5vw, 76px);
+    font-weight: 700;
+    line-height: 1.03;
+    letter-spacing: -1.5px;
+
+    text-shadow:
+        0 2px 3px rgba(0, 0, 0, 0.3),
+        0 5px 14px rgba(0, 0, 0, 0.14);
+}
+
+/* Đoạn mô tả */
+.header-contents p {
+    max-width: 590px;
+    margin: 0;
+
+    color: darkred;
+
+    font-size: clamp(15px, 1.15vw, 19px);
+    font-weight: 500;
+    line-height: 1.55;
+
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.65);
+}
+
+/* Nút View Menu */
+.header-contents button {
+    min-width: 175px;
+
+    padding: 14px 30px;
+
+    color: black;
+    background-color: white;
+
+    border: 2px solid rgba(0, 0, 0, 0.75);
+    border-radius: 50px;
+
+    font-size: clamp(14px, 1vw, 17px);
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.16);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.header-contents button:hover {
+    background-color: #fff8e7;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+.header-contents button:active {
+    transform: translateY(0);
+}
+
+/* Màn hình laptop và tablet */
+@media (max-width: 1050px) {
+    .header {
+        height: clamp(420px, 48vw, 540px);
+    }
+
+    .header-contents {
+        width: 55%;
+    }
+
+    .header-contents h2 {
+        font-size: clamp(38px, 5vw, 58px);
+    }
+
+    .header-contents p {
+        font-size: 15px;
+    }
+}
+
+/* Tablet nhỏ */
+@media (max-width: 750px) {
+    .header {
+        height: 430px;
+        border-radius: 16px;
+
+        background-position: 62% center;
+    }
+
+    .header::before {
+        background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.88) 0%,
+            rgba(255, 255, 255, 0.68) 55%,
+            rgba(255, 255, 255, 0.15) 100%
+        );
+    }
+
+    .header-contents {
+        left: 24px;
+        bottom: 30px;
+
+        width: 65%;
+        gap: 14px;
+    }
+
+    .header-contents h2 {
+        font-size: clamp(34px, 7vw, 50px);
+        line-height: 1.05;
+    }
+
+    .header-contents p {
+        display: none;
+    }
+
+    .header-contents button {
+        min-width: 145px;
+        padding: 11px 22px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .header {
+        height: 390px;
+        margin: 18px auto;
+
+        background-position: 64% center;
+    }
+
+    .header-contents {
+        left: 18px;
+        bottom: 24px;
+
+        width: 72%;
+    }
+
+    .header-contents h2 {
+        font-size: 35px;
+        letter-spacing: -0.5px;
+    }
+
+    .header-contents button {
+        min-width: 135px;
+        padding: 10px 19px;
+
+        font-size: 14px;
+    }
+}

@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment variables
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Vite builds
+dist/
+**/dist/
+.vite/
+**/.vite/
+
+# Logs
+*.log

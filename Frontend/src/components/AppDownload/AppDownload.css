@@ -1,0 +1,40 @@
+.app-download {
+    margin: auto auto;
+    margin-top: 100px;
+    text-align: center;
+    font-size: max(3vw,20px);
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 35px;
+}
+
+.app-download-text span {
+    background-color: #dbeafe;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.app-download-platforms {
+    display: flex;
+    justify-content: center;
+    gap: max(2vw,10px);
+    flex-wrap: wrap;
+    margin-top: 40px;
+}
+
+.app-download-platforms img {
+    width: 190px;
+    height: auto;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.app-download-platforms img:hover {
+    transform: scale(1.05);
+}
+
+.second-line {
+    display: block;
+    margin-top: 15px;
+}
