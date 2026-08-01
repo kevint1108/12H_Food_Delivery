@@ -2,12 +2,8 @@ import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import Stripe from "stripe";
 
-// Không khởi tạo Stripe ở ngoài:
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-//
-// Vì nếu STRIPE_SECRET_KEY bị thiếu,
-// Vercel có thể crash ngay khi import file.
-
+// Không tạo Stripe ở ngoài cùng.
+// Chỉ tạo khi khách hàng thực sự đặt hàng.
 const createStripeClient = () => {
   const stripeSecretKey =
     process.env.STRIPE_SECRET_KEY;
@@ -23,12 +19,28 @@ const createStripeClient = () => {
 
 // Placing user order for frontend
 const placeOrder = async (req, res) => {
-  const frontend_url =
-    (import.meta.env.VITE_API_URL || "http://localhost:5173").replace(/\/$/, "");;
+  /*
+    Đây phải là URL FRONTEND để Stripe
+    chuyển người dùng trở lại sau thanh toán.
+
+    Local:
+    http://localhost:5173
+
+    Vercel:
+    https://12-h-food-delivery-bncr.vercel.app
+  */
+  const frontend_url = (
+    process.env.FRONTEND_URL ||
+    "http://localhost:5173"
+  ).replace(/\/$/, "");
 
   let newOrder;
 
   try {
+    console.log("ORDER BODY:", req.body);
+    console.log("ORDER ITEMS:", req.body.items);
+    console.log("FRONTEND URL:", frontend_url);
+
     if (
       !Array.isArray(req.body.items) ||
       req.body.items.length === 0
@@ -39,26 +51,53 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    // Chỉ khởi tạo khi thật sự đặt hàng
+    if (!req.body.userId) {
+      return res.json({
+        success: false,
+        message: "User ID is missing"
+      });
+    }
+
+    if (
+      !req.body.address ||
+      typeof req.body.address !== "object"
+    ) {
+      return res.json({
+        success: false,
+        message: "Delivery address is missing"
+      });
+    }
+
+    const orderAmount =
+      Number(req.body.amount);
+
+    if (
+      !Number.isFinite(orderAmount) ||
+      orderAmount <= 0
+    ) {
+      return res.json({
+        success: false,
+        message: "Invalid order amount"
+      });
+    }
+
+    // Chỉ khởi tạo Stripe khi đặt hàng.
     const stripe = createStripeClient();
 
     newOrder = new orderModel({
       userId: req.body.userId,
       items: req.body.items,
-      amount: req.body.amount,
+      amount: orderAmount,
       address: req.body.address
     });
 
     await newOrder.save();
 
-
-
     const line_items = req.body.items.map(
       (item) => {
         const price = Number(item.price);
-        const quantity = Number(
-          item.quantity
-        );
+        const quantity =
+          Number(item.quantity);
 
         if (!item.name) {
           throw new Error(
@@ -148,10 +187,22 @@ const placeOrder = async (req, res) => {
     });
   } catch (error) {
     console.error("PLACE ORDER ERROR");
-    console.error("TYPE:", error.type);
-    console.error("CODE:", error.code);
-    console.error("PARAM:", error.param);
-    console.error("MESSAGE:", error.message);
+    console.error(
+      "TYPE:",
+      error.type
+    );
+    console.error(
+      "CODE:",
+      error.code
+    );
+    console.error(
+      "PARAM:",
+      error.param
+    );
+    console.error(
+      "MESSAGE:",
+      error.message
+    );
     console.error(
       "REQUEST ID:",
       error.requestId
@@ -186,7 +237,10 @@ const placeOrder = async (req, res) => {
 
 // Verify order payment
 const verifyOrder = async (req, res) => {
-  const { orderId, success } = req.body;
+  const {
+    orderId,
+    success
+  } = req.body;
 
   try {
     if (!orderId) {
@@ -237,12 +291,9 @@ const verifyOrder = async (req, res) => {
 // User orders for frontend
 const userOrders = async (req, res) => {
   try {
-    const orders = await orderModel
-      .find({
+    const orders =
+      await orderModel.find({
         userId: req.body.userId
-      })
-      .sort({
-        createdAt: -1
       });
 
     return res.json({
@@ -257,7 +308,7 @@ const userOrders = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Error loading orders"
+      message: "Error"
     });
   }
 };
@@ -265,11 +316,8 @@ const userOrders = async (req, res) => {
 // Listing orders for admin panel
 const listOrders = async (req, res) => {
   try {
-    const orders = await orderModel
-      .find({})
-      .sort({
-        createdAt: -1
-      });
+    const orders =
+      await orderModel.find({});
 
     return res.json({
       success: true,
@@ -283,31 +331,18 @@ const listOrders = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Error loading orders"
+      message: "Error"
     });
   }
 };
 
-// API for updating order status
+// Updating order status
 const updateStatus = async (req, res) => {
   try {
-    const {
-      orderId,
-      status
-    } = req.body;
-
-    if (!orderId || !status) {
-      return res.json({
-        success: false,
-        message:
-          "Order ID and status are required"
-      });
-    }
-
     await orderModel.findByIdAndUpdate(
-      orderId,
+      req.body.orderId,
       {
-        status
+        status: req.body.status
       }
     );
 
@@ -323,7 +358,7 @@ const updateStatus = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Error updating status"
+      message: "Error"
     });
   }
 };
