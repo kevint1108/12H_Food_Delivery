@@ -27,6 +27,8 @@ app.use(
   })
 );
 
+// Chỉ phù hợp với ảnh đã có sẵn trong deployment.
+// Ảnh mới upload không được lưu bền vững trên Vercel.
 app.use(
   "/images",
   express.static(
@@ -34,12 +36,12 @@ app.use(
   )
 );
 
-// Route kiểm tra server không cần MongoDB
+// Route này không cần MongoDB.
+// Dùng để kiểm tra Vercel đã chạy Express chưa.
 app.get("/", (req, res) => {
   return res.json({
     success: true,
-    message:
-      "12H Food Delivery API Working"
+    message: "12H Food Delivery API Working"
   });
 });
 
@@ -47,18 +49,23 @@ app.get("/health", (req, res) => {
   return res.json({
     success: true,
     status: "healthy",
-    environment:
-      process.env.VERCEL
-        ? "vercel"
-        : "local"
+    mongoUriConfigured:
+      Boolean(process.env.MONGO_URI),
+    stripeConfigured:
+      Boolean(
+        process.env.STRIPE_SECRET_KEY
+      ),
+    frontendUrlConfigured:
+      Boolean(process.env.FRONTEND_URL)
   });
 });
 
-// Tất cả API phải chờ MongoDB kết nối
+// Mọi /api request phải kết nối DB trước.
+// DB lỗi sẽ trả JSON, không để query chờ rồi timeout.
 app.use("/api", async (req, res, next) => {
   try {
     await connectDB();
-    next();
+    return next();
   } catch (error) {
     console.error(
       "DATABASE CONNECTION ERROR:",
@@ -68,11 +75,9 @@ app.use("/api", async (req, res, next) => {
     return res.status(500).json({
       success: false,
       message:
-        "Database connection failed",
-      error:
         process.env.NODE_ENV ===
         "production"
-          ? undefined
+          ? "Database connection failed"
           : error.message
     });
   }
@@ -91,10 +96,7 @@ app.use((req, res) => {
 });
 
 app.use((error, req, res, next) => {
-  console.error(
-    "BACKEND ERROR:",
-    error
-  );
+  console.error("BACKEND ERROR:", error);
 
   if (res.headersSent) {
     return next(error);
@@ -108,19 +110,14 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Local mới cần app.listen.
-// Vercel tự chạy Express app.
+// Chỉ chạy server liên tục trên máy local.
 if (!process.env.VERCEL) {
-  app.listen(
-    port,
-    "0.0.0.0",
-    () => {
-      console.log(
-        `Server started on http://localhost:${port}`
-      );
-    }
-  );
+  app.listen(port, "0.0.0.0", () => {
+    console.log(
+      `Server started on http://localhost:${port}`
+    );
+  });
 }
 
-// Vercel sử dụng default export này
+// Vercel sử dụng Express app này.
 export default app;

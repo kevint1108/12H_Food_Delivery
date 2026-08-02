@@ -14,13 +14,15 @@ export const connectDB = async () => {
 
   if (!mongoUri) {
     throw new Error(
-      "MONGO_URI is missing"
+      "MONGO_URI environment variable is missing"
     );
   }
 
   if (!connectionPromise) {
     connectionPromise = mongoose
-      .connect(mongoUri)
+      .connect(mongoUri, {
+        serverSelectionTimeoutMS: 10000
+      })
       .catch((error) => {
         connectionPromise = null;
         throw error;
