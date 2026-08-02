@@ -7,20 +7,28 @@ export const connectDB = async () => {
     return mongoose.connection;
   }
 
-  if (!connectionPromise) {
-    connectionPromise = mongoose.connect(
-      "mongodb+srv://greatstack:King%4012345@cluster0.zihgufg.mongodb.net/12H_Food_Delivery"
+  const mongoUri = process.env.MONGO_URI;
+
+  if (!mongoUri) {
+    throw new Error(
+      "MONGO_URI environment variable is missing"
     );
   }
 
-  try {
-    await connectionPromise;
-
-    console.log("DB Connected");
-
-    return mongoose.connection;
-  } catch (error) {
-    connectionPromise = null;
-    throw error;
+  if (!connectionPromise) {
+    connectionPromise = mongoose
+      .connect(mongoUri, {
+        serverSelectionTimeoutMS: 10000
+      })
+      .catch((error) => {
+        connectionPromise = null;
+        throw error;
+      });
   }
+
+  await connectionPromise;
+
+  console.log("DB Connected");
+
+  return mongoose.connection;
 };
