@@ -1,5 +1,22 @@
 import foodModel from "../models/foodModel.js";
-import fs from "fs";
+import cloudinary from "../config/cloudinary.js";
+
+// Đẩy buffer ảnh (từ multer memoryStorage) lên Cloudinary.
+// Trả về { secure_url, public_id } khi thành công.
+const uploadImageToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder: "12h-food-delivery" },
+      (error, result) => {
+        if (error) {
+          return reject(error);
+        }
+        return resolve(result);
+      }
+    );
+    uploadStream.end(buffer);
+  });
+};
 
 const addFood = async (req, res) => {
   console.log("BODY =", req.body);
@@ -18,12 +35,15 @@ const addFood = async (req, res) => {
   if (!category) return res.json({ success: false, message: "Missing category" });
   if (!req.file) return res.json({ success: false, message: "Missing image" });
 
+  const uploadResult = await uploadImageToCloudinary(req.file.buffer);
+
   const food = new foodModel({
     name,
     description,
     price: Number(price),
     category,
-    image: req.file.filename
+    image: uploadResult.secure_url,
+    imageId: uploadResult.public_id
   });
 
   await food.save();
@@ -87,11 +107,13 @@ const removeFood = async (req, res) => {
       });
     }
 
-    fs.unlink(`uploads/${food.image}`, (err) => {
-      if (err) {
-        console.log("Image delete error:", err.message);
+    if (food.imageId) {
+      try {
+        await cloudinary.uploader.destroy(food.imageId);
+      } catch (imageError) {
+        console.log("Image delete error:", imageError.message);
       }
-    });
+    }
 
     await foodModel.findByIdAndDelete(id);
 
