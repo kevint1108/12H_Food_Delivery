@@ -17,7 +17,10 @@ export const connectDB = async () => {
 
   if (!connectionPromise) {
     connectionPromise = mongoose
-      .connect(mongoUri)
+      .connect(mongoUri, {
+        maxPoolSize: 10,
+        serverSelectionTimeoutMS: 10000
+      })
       .catch((error) => {
         connectionPromise = null;
         throw error;

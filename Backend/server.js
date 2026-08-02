@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import "dotenv/config";
 
 import { connectDB } from "./config/db.js";
@@ -11,8 +13,12 @@ import orderRouter from "./routes/orderRoute.js";
 const app = express();
 const port = process.env.PORT || 4000;
 
-// Giữ phong cách GreatStack
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Giống GreatStack: cho phép Frontend và Admin gọi API
 app.use(cors());
+
 app.use(express.json());
 app.use(
   express.urlencoded({
@@ -20,7 +26,25 @@ app.use(
   })
 );
 
-// Route kiểm tra không cần MongoDB
+
+app.use(
+  "/images",
+  express.static(path.join(__dirname, "uploads"))
+);
+
+
+connectDB().catch((error) => {
+  console.error(
+    "DATABASE CONNECTION ERROR:",
+    error.message
+  );
+});
+
+app.use("/api/food", foodRouter);
+app.use("/api/user", userRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/order", orderRouter);
+
 app.get("/", (req, res) => {
   return res.json({
     success: true,
@@ -35,39 +59,6 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Mọi API phải chờ MongoDB kết nối.
-// Không để API query trước khi database sẵn sàng.
-app.use("/api", async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (error) {
-    console.error(
-      "DATABASE CONNECTION ERROR:",
-      error.message
-    );
-
-    return res.status(500).json({
-      success: false,
-      message: "Database connection failed"
-    });
-  }
-});
-
-app.use("/api/food", foodRouter);
-app.use("/api/user", userRouter);
-app.use("/api/cart", cartRouter);
-app.use("/api/order", orderRouter);
-
-// 404 phải đặt sau routes
-app.use((req, res) => {
-  return res.status(404).json({
-    success: false,
-    message: "API route not found"
-  });
-});
-
-// Error handler
 app.use((error, req, res, next) => {
   console.error("BACKEND ERROR:", error);
 
@@ -82,7 +73,8 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Chỉ chạy server thủ công khi phát triển local
+// Chỉ mở port khi chạy local.
+// Vercel tự quản lý Express Function.
 if (!process.env.VERCEL) {
   app.listen(port, "0.0.0.0", () => {
     console.log(
@@ -91,5 +83,5 @@ if (!process.env.VERCEL) {
   });
 }
 
-// Vercel sử dụng Express app này
+// Bắt buộc cho Vercel
 export default app;

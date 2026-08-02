@@ -10,7 +10,7 @@ const createStripeClient = () => {
 
   if (!stripeSecretKey) {
     throw new Error(
-      "STRIPE_SECRET_KEY is missing"
+      "STRIPE_SECRET_KEY environment variable is missing"
     );
   }
 
@@ -27,8 +27,6 @@ const placeOrder = async (req, res) => {
   let newOrder;
 
   try {
-    const stripe = createStripeClient();
-
     if (
       !Array.isArray(req.body.items) ||
       req.body.items.length === 0
@@ -38,6 +36,11 @@ const placeOrder = async (req, res) => {
         message: "Your cart is empty"
       });
     }
+
+    // Chỉ tạo Stripe khi khách thực sự đặt hàng.
+    // Thiếu key sẽ được catch bên dưới,
+    // không làm toàn bộ Backend crash.
+    const stripe = createStripeClient();
 
     newOrder = new orderModel({
       userId: req.body.userId,
@@ -49,34 +52,57 @@ const placeOrder = async (req, res) => {
     await newOrder.save();
 
     const line_items = req.body.items.map(
-      (item) => ({
-        price_data: {
-          currency: "usd",
+      (item) => {
+        const price = Number(item.price);
+        const quantity =
+          Number(item.quantity);
 
-          product_data: {
-            name: item.name
+        if (!item.name) {
+          throw new Error(
+            "One food item is missing its name"
+          );
+        }
+
+        if (
+          !Number.isFinite(price) ||
+          price <= 0
+        ) {
+          throw new Error(
+            `Invalid price for ${item.name}`
+          );
+        }
+
+        if (
+          !Number.isInteger(quantity) ||
+          quantity <= 0
+        ) {
+          throw new Error(
+            `Invalid quantity for ${item.name}`
+          );
+        }
+
+        return {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: item.name
+            },
+            unit_amount:
+              Math.round(price * 100)
           },
-
-          unit_amount: Math.round(
-            Number(item.price) * 100
-          )
-        },
-
-        quantity: Number(item.quantity)
-      })
+          quantity
+        };
+      }
     );
 
     line_items.push({
       price_data: {
         currency: "usd",
-
         product_data: {
           name: "Delivery Charges"
         },
-
         unit_amount: 200
       },
-
       quantity: 1
     });
 
