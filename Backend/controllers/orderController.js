@@ -19,16 +19,6 @@ const createStripeClient = () => {
 
 // Placing user order for frontend
 const placeOrder = async (req, res) => {
-  /*
-  This must be the FRONTEND URL for Stripe
-  to redirect the user back to after payment. 
-
-  Local:
-  http://localhost:5173
-
-  Vercel:
-  https://12-h-food-delivery-bncr.vercel.app
-*/
   const frontend_url = (
     process.env.FRONTEND_URL ||
     "http://localhost:5173"
@@ -37,9 +27,7 @@ const placeOrder = async (req, res) => {
   let newOrder;
 
   try {
-    console.log("ORDER BODY:", req.body);
-    console.log("ORDER ITEMS:", req.body.items);
-    console.log("FRONTEND URL:", frontend_url);
+    const stripe = createStripeClient();
 
     if (
       !Array.isArray(req.body.items) ||
@@ -51,94 +39,31 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    if (!req.body.userId) {
-      return res.json({
-        success: false,
-        message: "User ID is missing"
-      });
-    }
-
-    if (
-      !req.body.address ||
-      typeof req.body.address !== "object"
-    ) {
-      return res.json({
-        success: false,
-        message: "Delivery address is missing"
-      });
-    }
-
-    const orderAmount =
-      Number(req.body.amount);
-
-    if (
-      !Number.isFinite(orderAmount) ||
-      orderAmount <= 0
-    ) {
-      return res.json({
-        success: false,
-        message: "Invalid order amount"
-      });
-    }
-
-    // Only initialize Stripe when placing an order.
-    const stripe = createStripeClient();
-
     newOrder = new orderModel({
       userId: req.body.userId,
       items: req.body.items,
-      amount: orderAmount,
+      amount: req.body.amount,
       address: req.body.address
     });
 
     await newOrder.save();
 
     const line_items = req.body.items.map(
-      (item) => {
-        const price = Number(item.price);
-        const quantity =
-          Number(item.quantity);
+      (item) => ({
+        price_data: {
+          currency: "usd",
 
-        if (!item.name) {
-          throw new Error(
-            "One food item is missing its name"
-          );
-        }
-
-        if (
-          !Number.isFinite(price) ||
-          price <= 0
-        ) {
-          throw new Error(
-            `Invalid price for ${item.name}: ${item.price}`
-          );
-        }
-
-        if (
-          !Number.isInteger(quantity) ||
-          quantity <= 0
-        ) {
-          throw new Error(
-            `Invalid quantity for ${item.name}: ${item.quantity}`
-          );
-        }
-
-        return {
-          price_data: {
-            currency: "usd",
-
-            product_data: {
-              name: item.name
-            },
-
-            unit_amount: Math.round(
-              price * 100
-            )
+          product_data: {
+            name: item.name
           },
 
-          quantity
-        };
-      }
+          unit_amount: Math.round(
+            Number(item.price) * 100
+          )
+        },
+
+        quantity: Number(item.quantity)
+      })
     );
 
     line_items.push({
@@ -149,16 +74,11 @@ const placeOrder = async (req, res) => {
           name: "Delivery Charges"
         },
 
-        unit_amount: 2 * 100
+        unit_amount: 200
       },
 
       quantity: 1
     });
-
-    console.log(
-      "STRIPE LINE ITEMS:",
-      JSON.stringify(line_items, null, 2)
-    );
 
     const session =
       await stripe.checkout.sessions.create({
@@ -172,8 +92,6 @@ const placeOrder = async (req, res) => {
           `${frontend_url}/verify?success=false&orderId=${newOrder._id}`
       });
 
-    // Only clear the cart after the Stripe Session
-    // has been successfully created.
     await userModel.findByIdAndUpdate(
       req.body.userId,
       {
@@ -186,33 +104,11 @@ const placeOrder = async (req, res) => {
       session_url: session.url
     });
   } catch (error) {
-    console.error("PLACE ORDER ERROR");
     console.error(
-      "TYPE:",
-      error.type
-    );
-    console.error(
-      "CODE:",
-      error.code
-    );
-    console.error(
-      "PARAM:",
-      error.param
-    );
-    console.error(
-      "MESSAGE:",
+      "PLACE ORDER ERROR:",
       error.message
     );
-    console.error(
-      "REQUEST ID:",
-      error.requestId
-    );
-    console.error(
-      "STRIPE LOG:",
-      error.request_log_url
-    );
 
-    // If Stripe fails, delete the unpaid order.
     if (newOrder?._id) {
       try {
         await orderModel.findByIdAndDelete(
@@ -220,7 +116,7 @@ const placeOrder = async (req, res) => {
         );
       } catch (deleteError) {
         console.error(
-          "CANNOT DELETE FAILED ORDER:",
+          "DELETE FAILED ORDER ERROR:",
           deleteError.message
         );
       }
