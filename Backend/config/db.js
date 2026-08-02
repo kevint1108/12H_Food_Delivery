@@ -8,13 +8,9 @@ export const connectDB = async () => {
   }
 
   if (!connectionPromise) {
-    const mongoUri = process.env.MONGO_URI;
-
-    if (!mongoUri) {
-      throw new Error("MONGO_URI is missing");
-    }
-
-    connectionPromise = mongoose.connect(mongoUri);
+    connectionPromise = mongoose.connect(
+      "mongodb+srv://greatstack:King%4012345@cluster0.zihgufg.mongodb.net/12H_Food_Delivery"
+    );
   }
 
   try {
