@@ -5,20 +5,19 @@ export const StoreContext = createContext(null)
 const StoreContextProvider = (props) => {
 
     const [cartItems, setCartItems] = useState({});
-    const productionApiUrl =
+    const productionUrl =
         import.meta.env.VITE_API_URL;
 
-    const localApiUrl = import.meta.env.DEV
-        ? "http://localhost:4000"
-        : "";
-
     const url = (
-        productionApiUrl || localApiUrl
+        productionUrl ||
+        (import.meta.env.DEV
+            ? "http://localhost:4000"
+            : "")
     ).replace(/\/$/, "");
 
     if (!url) {
-        throw new Error(
-            "VITE_API_URL is missing in the Frontend Vercel project"
+        console.error(
+            "VITE_API_URL is missing from the Frontend deployment"
         );
     }
     const [token, setToken] = useState("");

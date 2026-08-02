@@ -13,12 +13,13 @@ import orderRouter from "./routes/orderRoute.js";
 const app = express();
 const port = process.env.PORT || 4000;
 
-const __filename = fileURLToPath(import.meta.url);
+const __filename = fileURLToPath(
+  import.meta.url
+);
+
 const __dirname = path.dirname(__filename);
 
-// Giống GreatStack: cho phép Frontend và Admin gọi API
 app.use(cors());
-
 app.use(express.json());
 app.use(
   express.urlencoded({
@@ -26,18 +27,55 @@ app.use(
   })
 );
 
-
 app.use(
   "/images",
-  express.static(path.join(__dirname, "uploads"))
+  express.static(
+    path.join(__dirname, "uploads")
+  )
 );
 
+// Route kiểm tra server không cần MongoDB
+app.get("/", (req, res) => {
+  return res.json({
+    success: true,
+    message:
+      "12H Food Delivery API Working"
+  });
+});
 
-connectDB().catch((error) => {
-  console.error(
-    "DATABASE CONNECTION ERROR:",
-    error.message
-  );
+app.get("/health", (req, res) => {
+  return res.json({
+    success: true,
+    status: "healthy",
+    environment:
+      process.env.VERCEL
+        ? "vercel"
+        : "local"
+  });
+});
+
+// Tất cả API phải chờ MongoDB kết nối
+app.use("/api", async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error(
+      "DATABASE CONNECTION ERROR:",
+      error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        "Database connection failed",
+      error:
+        process.env.NODE_ENV ===
+        "production"
+          ? undefined
+          : error.message
+    });
+  }
 });
 
 app.use("/api/food", foodRouter);
@@ -45,22 +83,18 @@ app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 
-app.get("/", (req, res) => {
-  return res.json({
-    success: true,
-    message: "12H Food Delivery API Working"
-  });
-});
-
-app.get("/health", (req, res) => {
-  return res.json({
-    success: true,
-    status: "healthy"
+app.use((req, res) => {
+  return res.status(404).json({
+    success: false,
+    message: "API route not found"
   });
 });
 
 app.use((error, req, res, next) => {
-  console.error("BACKEND ERROR:", error);
+  console.error(
+    "BACKEND ERROR:",
+    error
+  );
 
   if (res.headersSent) {
     return next(error);
@@ -69,19 +103,24 @@ app.use((error, req, res, next) => {
   return res.status(500).json({
     success: false,
     message:
-      error.message || "Internal server error"
+      error.message ||
+      "Internal server error"
   });
 });
 
-// Chỉ mở port khi chạy local.
-// Vercel tự quản lý Express Function.
+// Local mới cần app.listen.
+// Vercel tự chạy Express app.
 if (!process.env.VERCEL) {
-  app.listen(port, "0.0.0.0", () => {
-    console.log(
-      `Server started on http://localhost:${port}`
-    );
-  });
+  app.listen(
+    port,
+    "0.0.0.0",
+    () => {
+      console.log(
+        `Server started on http://localhost:${port}`
+      );
+    }
+  );
 }
 
-// Bắt buộc cho Vercel
+// Vercel sử dụng default export này
 export default app;
