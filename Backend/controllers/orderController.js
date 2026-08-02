@@ -31,7 +31,7 @@ const placeOrder = async (req, res) => {
 */
   const frontend_url = (
     process.env.FRONTEND_URL ||
-    "https://12-h-food-delivery-bncr.vercel.app/"
+    "http://localhost:5173"
   ).replace(/\/$/, "");
 
   let newOrder;
