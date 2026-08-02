@@ -13,13 +13,12 @@ import orderRouter from "./routes/orderRoute.js";
 const app = express();
 const port = process.env.PORT || 4000;
 
-const __filename = fileURLToPath(
-  import.meta.url
-);
-
+const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Giống GreatStack: cho phép Frontend và Admin gọi API
 app.use(cors());
+
 app.use(express.json());
 app.use(
   express.urlencoded({
@@ -27,17 +26,25 @@ app.use(
   })
 );
 
-// Chỉ phù hợp với ảnh đã có sẵn trong deployment.
-// Ảnh mới upload không được lưu bền vững trên Vercel.
+
 app.use(
   "/images",
-  express.static(
-    path.join(__dirname, "uploads")
-  )
+  express.static(path.join(__dirname, "uploads"))
 );
 
-// Route này không cần MongoDB.
-// Dùng để kiểm tra Vercel đã chạy Express chưa.
+
+connectDB().catch((error) => {
+  console.error(
+    "DATABASE CONNECTION ERROR:",
+    error.message
+  );
+});
+
+app.use("/api/food", foodRouter);
+app.use("/api/user", userRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/order", orderRouter);
+
 app.get("/", (req, res) => {
   return res.json({
     success: true,
@@ -48,50 +55,7 @@ app.get("/", (req, res) => {
 app.get("/health", (req, res) => {
   return res.json({
     success: true,
-    status: "healthy",
-    mongoUriConfigured:
-      Boolean(process.env.MONGO_URI),
-    stripeConfigured:
-      Boolean(
-        process.env.STRIPE_SECRET_KEY
-      ),
-    frontendUrlConfigured:
-      Boolean(process.env.FRONTEND_URL)
-  });
-});
-
-// Mọi /api request phải kết nối DB trước.
-// DB lỗi sẽ trả JSON, không để query chờ rồi timeout.
-app.use("/api", async (req, res, next) => {
-  try {
-    await connectDB();
-    return next();
-  } catch (error) {
-    console.error(
-      "DATABASE CONNECTION ERROR:",
-      error.message
-    );
-
-    return res.status(500).json({
-      success: false,
-      message:
-        process.env.NODE_ENV ===
-        "production"
-          ? "Database connection failed"
-          : error.message
-    });
-  }
-});
-
-app.use("/api/food", foodRouter);
-app.use("/api/user", userRouter);
-app.use("/api/cart", cartRouter);
-app.use("/api/order", orderRouter);
-
-app.use((req, res) => {
-  return res.status(404).json({
-    success: false,
-    message: "API route not found"
+    status: "healthy"
   });
 });
 
@@ -105,12 +69,12 @@ app.use((error, req, res, next) => {
   return res.status(500).json({
     success: false,
     message:
-      error.message ||
-      "Internal server error"
+      error.message || "Internal server error"
   });
 });
 
-// Chỉ chạy server liên tục trên máy local.
+// Chỉ mở port khi chạy local.
+// Vercel tự quản lý Express Function.
 if (!process.env.VERCEL) {
   app.listen(port, "0.0.0.0", () => {
     console.log(
@@ -119,5 +83,5 @@ if (!process.env.VERCEL) {
   });
 }
 
-// Vercel sử dụng Express app này.
+// Bắt buộc cho Vercel
 export default app;
