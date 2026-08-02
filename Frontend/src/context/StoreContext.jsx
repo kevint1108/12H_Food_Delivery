@@ -5,23 +5,9 @@ export const StoreContext = createContext(null)
 const StoreContextProvider = (props) => {
 
     const [cartItems, setCartItems] = useState({});
-    const productionUrl =
-        import.meta.env.VITE_API_URL;
-
-    const url = (
-        productionUrl ||
-        (import.meta.env.DEV
-            ? "http://localhost:4000"
-            : "")
-    ).replace(/\/$/, "");
-
-    if (!url) {
-        console.error(
-            "VITE_API_URL is missing from the Frontend deployment"
-        );
-    }
-    const [token, setToken] = useState("");
-    const [food_list, setFoodList] = useState([]);
+    const url = (import.meta.env.VITE_API_URL || "http://localhost:4000").replace(/\/$/, "");
+    const [token,setToken] = useState("");
+    const [food_list,setFoodList] = useState([]);
     const [search, setSearch] = useState("");
 
     const addToCart = async (itemId) => {
@@ -32,14 +18,14 @@ const StoreContextProvider = (props) => {
             setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }))
         }
         if (token) {
-            await axios.post(url + "/api/cart/add", { itemId }, { headers: { token } })
+            await axios.post(url+"/api/cart/add",{itemId},{headers:{token}})
         }
     }
 
     const removeFromCart = async (itemId) => {
         setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
         if (token) {
-            await axios.post(url + "/api/cart/remove", { itemId }, { headers: { token } })
+            await axios.post(url+"/api/cart/remove",{itemId},{headers:{token}})
         }
     }
 
@@ -56,29 +42,29 @@ const StoreContextProvider = (props) => {
     }
 
     const fetchFoodList = async () => {
-        const response = await axios.get(url + "/api/food/list");
-        if (response.data.success) {
+        const response = await axios.get(url+"/api/food/list");
+        if (response.data.success){
             setFoodList(response.data.data);
         }
     };
 
     const loadCartData = async (token) => {
-        const response = await axios.post(url + "/api/cart/get", {}, { headers: { token } });
+        const response = await axios.post(url+"/api/cart/get",{},{headers:{token}});
         setCartItems(response.data.cartData || {});
     }
 
-    useEffect(() => {
+    useEffect(()=>{
         async function loadData() {
             await fetchFoodList();
-            if (localStorage.getItem("token")) {
+            if (localStorage.getItem("token")){
                 setToken(localStorage.getItem("token"));
                 await loadCartData(localStorage.getItem("token"));
             }
         }
         loadData();
-    }, [])
+    },[])
 
-    const contextValue = {
+    const contextValue = { 
         food_list,
         cartItems,
         setCartItems,

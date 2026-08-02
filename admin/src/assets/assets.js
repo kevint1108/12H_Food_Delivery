@@ -5,22 +5,7 @@ import parcel_icon from "./parcel_icon.png";
 import profile_image from "./profile_image.png";
 import upload_area from "./upload_area.png"
 
-const productionApiUrl =
-  import.meta.env.VITE_API_URL;
-
-const localApiUrl = import.meta.env.DEV
-  ? "http://localhost:4000"
-  : "";
-
-export const url = (
-  productionApiUrl || localApiUrl
-).replace(/\/$/, "");
-
-if (!url) {
-  throw new Error(
-    "VITE_API_URL is missing in the Admin Vercel project"
-  );
-}
+export const url = "https://12-h-food-delivery-6zik.vercel.app"
 export const currency = "$"
 
 export const assets = {

@@ -26,13 +26,14 @@ app.use(
   })
 );
 
-
+// Cho phép Frontend và Admin hiển thị ảnh món ăn
 app.use(
   "/images",
   express.static(path.join(__dirname, "uploads"))
 );
 
-
+// Không để lỗi kết nối database trở thành
+// unhandled promise rejection.
 connectDB().catch((error) => {
   console.error(
     "DATABASE CONNECTION ERROR:",
