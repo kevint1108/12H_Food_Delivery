@@ -33,11 +33,21 @@ app.use(
 );
 
 
-connectDB().catch((error) => {
-  console.error(
-    "DATABASE CONNECTION ERROR:",
-    error.message
-  );
+app.use("/api", async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error(
+      "DATABASE CONNECTION ERROR:",
+      error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Database connection failed"
+    });
+  }
 });
 
 app.use("/api/food", foodRouter);
