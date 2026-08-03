@@ -33,24 +33,24 @@ A full-stack food delivery web app built with the **MERN stack** — customer or
 
 | Home | Menu |
 |:---:|:---:|
-| ![Home page](screenshots/home-hero.png) | ![Menu grid](screenshots/menu-dishes.png) |
+| ![Home page](screenshots/Frontend_of_12H.png) | ![Menu grid](screenshots/Favorite_dished.png) |
 
 | Search | Search results |
 |:---:|:---:|
-| ![Search bar](screenshots/search-bar.png) | ![Search results](screenshots/search-results.png) |
+| ![Search bar](screenshots/search_button_in_12h.png) | ![Search results](screenshots/Search_Result_in_12h.png) |
 
 | Cart | Delivery info |
 |:---:|:---:|
-| ![Cart](screenshots/cart.png) | ![Checkout delivery info](screenshots/checkout-delivery.png) |
+| ![Cart](screenshots/In_cart_12h.png) | ![Checkout delivery info](screenshots/checkout-delivery.png) |
 
 | Stripe checkout | Order history |
 |:---:|:---:|
-| ![Stripe payment](screenshots/checkout-payment.png) | ![My Orders](screenshots/my-orders.png) |
+| ![Stripe payment](screenshots/Stripe_payment_in_12h.png) | ![My Orders](screenshots/My_orders_in_12h.png) |
 
 <details>
-<summary>Footer</summary>
+<summary>Mobile app / footer</summary>
 
-![Footer](screenshots/footer.png)
+![Footer](screenshots/mobile_app_icon_12h.png)
 
 </details>
 
