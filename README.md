@@ -43,16 +43,16 @@ A full-stack food delivery web app built with the **MERN stack** — customer or
 
 | Cart | Delivery info |
 |:---:|:---:|
-| ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/In_cart_12h.png?raw=true) width="400"> | ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/checkout-delivery.png?raw=true) width="400"> |
+| <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/In%20cart%2012h.png?raw=true" width="400"> | <img src ="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Delivery%20Information%20and%20Cart%20total%20in%2012h.png?raw=true" width="400"> |
 
 | Stripe checkout | Order history |
 |:---:|:---:|
-| ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Stripe_payment_in_12h.png?raw=true) width="400"> |  ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/My_orders_in_12h.png?raw=true) width="400"> |
+| <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Stripe%20payment%20in%2012h.png?raw=true" width="400"> |  <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/My%20orders%20in%2012h.png?raw=true" width="400"> |
 
 <details>
 <summary>Mobile app / footer</summary>
 
- ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/mobile_app_icon_12h.png?raw=true) width="500">
+<img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/mobile%20app%20icon%2012h.png?raw=true" width="500">
 
 </details>
 
@@ -60,11 +60,11 @@ A full-stack food delivery web app built with the **MERN stack** — customer or
 
 | Add item | Manage items |
 |:---:|:---:|
-|  ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/admin-add-item.png?raw=true) width="400"> |  ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/admin-list-items.png?raw=true) width="400"> |
+|  <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/add%20item%20in%2012h.png?raw=true" width="400"> | <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/List%20Order%20in%2012h.png?raw=true" width="400"> |
 
 | Manage orders |
 |:---:|
-| ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/admin-orders.png?raw=true) width="500"> |
+| <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Orders%20in%2012h.png?raw=true" width="500"> |
 
 ---
 
