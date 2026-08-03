@@ -1,5 +1,7 @@
 # 🍔 12H Food Delivery
 
+# 🍔 12H Food Delivery
+
 A full-stack food delivery web app built with the **MERN stack** — customer ordering site, admin dashboard, JWT auth, Stripe checkout, and Cloudinary-hosted images. Deployed on **Vercel** as three independent projects from a single repo.
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
