@@ -175,10 +175,11 @@ Deployed on Vercel as three separate projects from this repository, each with it
 
 ---
 ## Vercel Project website
-Link=[12H_Food_delivery_Frontend](https://vercel.com/kevint1108s-projects/12-h-food-delivery-bncr)
-Link=[12H_Food_delivery_Backend](https://vercel.com/kevint1108s-projects/12-h-food-delivery-6zik)
-Link=[12H_Food_delivery_Admin](https://vercel.com/kevint1108s-projects/12-h-food-delivery-gqok)
+Frontend= [12H_Food_delivery_Frontend](https://vercel.com/kevint1108s-projects/12-h-food-delivery-bncr)
+Backend =[12H_Food_delivery_Backend](https://vercel.com/kevint1108s-projects/12-h-food-delivery-6zik)
+Admin =[12H_Food_delivery_Admin](https://vercel.com/kevint1108s-projects/12-h-food-delivery-gqok)
 
+---
 ## 🙏 Acknowledgments
 
 - Built on top of the [GreatStack Food Delivery tutorial](https://www.youtube.com/watch?v=DBMPXJJfQEA)
