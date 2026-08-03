@@ -164,7 +164,7 @@ export const food_list = [
     _id: "7",
     name: "Beef Wellington",
     image: food_7,
-    price: 15.98,
+    price: 15,
     description: "Dish consisting of a beef tenderloin coated in duxelles (a mushroom paste), wrapped in prosciutto or crepes, and then encased in puff pastry before being baked.",
     category: "Beef"
   },
