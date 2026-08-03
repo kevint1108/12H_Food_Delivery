@@ -5,7 +5,7 @@ import parcel_icon from "./parcel_icon.png";
 import profile_image from "./profile_image.png";
 import upload_area from "./upload_area.png"
 
-export const url = "https://12-h-food-delivery-6zik.vercel.app"
+export const url = (import.meta.env.VITE_API_URL || "http://localhost:4000").replace(/\/$/, "");
 export const currency = "$"
 
 export const assets = {

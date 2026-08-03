@@ -5,7 +5,6 @@ const foodSchema = new mongoose.Schema({
     description: {type:String,required:true},
     price:{type:Number,required:true},
     image: {type:String,required:true},
-    imgaeId: {type:String, required:true},
     category: {type:String,required:true}
 })
 
