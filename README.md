@@ -35,24 +35,24 @@ A full-stack food delivery web app built with the **MERN stack** — customer or
 
 | Home | Menu |
 |:---:|:---:|
-| <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Frontend_of_12H.png?raw=true" width="400"> | <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Favorite_dished.png?raw=true" width="400"> |
+| ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Frontend%20of%2012H.png?raw=true) width="400"> |  ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Favorite%20dished.png?raw=true) width="400"> |
 
 | Search | Search results |
 |:---:|:---:|
-| <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/search_button_in_12h.png?raw=true" width="400"> | <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Search_Result_in_12h.png?raw=true" width="400"> |
+|  ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/search_button_in_12h.png?raw=true) width="400"> |  ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Search_Result_in_12h.png?raw=true) width="400"> |
 
 | Cart | Delivery info |
 |:---:|:---:|
-| <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/In_cart_12h.png?raw=true" width="400"> | <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/checkout-delivery.png?raw=true" width="400"> |
+| ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/In_cart_12h.png?raw=true) width="400"> | ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/checkout-delivery.png?raw=true) width="400"> |
 
 | Stripe checkout | Order history |
 |:---:|:---:|
-| <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Stripe_payment_in_12h.png?raw=true" width="400"> | <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/My_orders_in_12h.png?raw=true" width="400"> |
+| ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Stripe_payment_in_12h.png?raw=true) width="400"> |  ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/My_orders_in_12h.png?raw=true) width="400"> |
 
 <details>
 <summary>Mobile app / footer</summary>
 
-<img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/mobile_app_icon_12h.png?raw=true" width="500">
+ ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/mobile_app_icon_12h.png?raw=true) width="500">
 
 </details>
 
@@ -60,11 +60,11 @@ A full-stack food delivery web app built with the **MERN stack** — customer or
 
 | Add item | Manage items |
 |:---:|:---:|
-| <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/admin-add-item.png?raw=true" width="400"> | <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/admin-list-items.png?raw=true" width="400"> |
+|  ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/admin-add-item.png?raw=true) width="400"> |  ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/admin-list-items.png?raw=true) width="400"> |
 
 | Manage orders |
 |:---:|
-| <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/admin-orders.png?raw=true" width="500"> |
+| ![image alt](https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/admin-orders.png?raw=true) width="500"> |
 
 ---
 
