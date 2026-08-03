@@ -39,7 +39,7 @@ A full-stack food delivery web app built with the **MERN stack** — customer or
 
 | Search | Search results |
 |:---:|:---:|
-|  <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/search_button_in_12h.png?raw=true" width="400"> |  <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Search_Result_in_12h.png?raw=true" width="400"> |
+|  <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/search_button_in_12h.png?raw=true" width="400"> |  <img src="https://github.com/kevint1108/12H_Food_Delivery/blob/main/screenshots/Search%20Result%20in%2012h.png?raw=true" width="400"> |
 
 | Cart | Delivery info |
 |:---:|:---:|
