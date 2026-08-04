@@ -174,12 +174,25 @@ cd admin && npm run dev
 Deployed on Vercel as three separate projects from this repository, each with its own Root Directory (`Backend`, `Frontend`, `admin`) and environment variables.
 
 ---
-## Vercel Project website
+## Author
+
+Binh Tang (Kevin)
+
+Github:https://github.com/kevint1108
+
+Live Demo:
 - Frontend= [12H_Food_delivery_Frontend](https://vercel.com/kevint1108s-projects/12-h-food-delivery-bncr)
 - Backend =[12H_Food_delivery_Backend](https://vercel.com/kevint1108s-projects/12-h-food-delivery-6zik)
 - Admin =[12H_Food_delivery_Admin](https://vercel.com/kevint1108s-projects/12-h-food-delivery-gqok)
 
+Project: 
+
+12H Food Delivery - Fullstack
+
+Feature
+
 ---
+
 ## 🙏 Acknowledgments
 
 - Built on top of the [GreatStack Food Delivery tutorial](https://www.youtube.com/watch?v=DBMPXJJfQEA)
