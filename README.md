@@ -178,7 +178,7 @@ Deployed on Vercel as three separate projects from this repository, each with it
 
 Binh Tang (Kevin)
 
-Github:https://github.com/kevint1108
+Github: https://github.com/kevint1108
 
 Live Demo:
 - Frontend= [12H_Food_delivery_Frontend](https://vercel.com/kevint1108s-projects/12-h-food-delivery-bncr)
@@ -191,6 +191,17 @@ Project:
 
 Feature
 
+Customer site
+- Browse & filter — full menu or by category (Burgers, Beef, Poke Bowls, Spring Rolls, Bánh Mì, Milk Tea, Pizza, Bao Buns, Mochi, and more)
+- Live search — matches against dish name and description, with a dedicated results page
+- Cart — add/remove items, live quantity controls, running subtotal + delivery fee
+- Accounts — email/password signup & login with JWT; cart, checkout, and order history are protected routes
+- Checkout — delivery info form + Stripe Checkout session, redirects back to confirm payment before the order is placed
+- Order tracking — see every past order with live status (Food Processing → Out for Delivery → Delivered)
+Admin panel
+- Add items — upload a dish photo (stored on Cloudinary, not the server disk) along with name, description, category, and price
+- Manage menu — table view of every item with image, category, and price; remove an item and its Cloudinary image in one click
+- Manage orders — see every order with customer name, delivery address, phone, and items ordered; update delivery status from a dropdown
 ---
 
 ## 🙏 Acknowledgments
