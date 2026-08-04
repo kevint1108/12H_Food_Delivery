@@ -189,7 +189,7 @@ Project:
 
 12H Food Delivery - Fullstack
 
-Feature
+✨ Features
 
 Customer site
 - Browse & filter — full menu or by category (Burgers, Beef, Poke Bowls, Spring Rolls, Bánh Mì, Milk Tea, Pizza, Bao Buns, Mochi, and more)
