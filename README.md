@@ -181,7 +181,7 @@ Binh Tang (Kevin)
 Github: https://github.com/kevint1108
 
 Live Demo:
-- Frontend= [12H_Food_delivery_Frontend](https://12-h-food-delivery-bncr.vercel.app/)
+- Frontend= [12H_Food_delivery_Frontend]((https://12-h-food-delivery-bncr.vercel.app/))
 - Backend =[12H_Food_delivery_Backend](https://12-h-food-delivery-6zik.vercel.app/)
 - Admin =[12H_Food_delivery_Admin](https://12-h-food-delivery-gqok.vercel.app/)
 
