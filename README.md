@@ -189,6 +189,9 @@ Project:
 
 12H Food Delivery - Fullstack
 
+Payment Stripe Card Test:
+- [Stripe_card_payment](https://docs.stripe.com/testing#international-cards/) 
+
 ---
 
 ## 🙏 Acknowledgments
